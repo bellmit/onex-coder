@@ -1,7 +1,7 @@
 server:
   port: 9091
   servlet:
-    context-path: /xcoder
+    context-path: /coder
 
 spring:
   jackson:

@@ -1,4 +1,4 @@
-package com.nb6868.onex.xcoder;
+package com.nb6868.onexcoder;
 
 import cn.smallbun.screw.core.Configuration;
 import cn.smallbun.screw.core.engine.EngineConfig;

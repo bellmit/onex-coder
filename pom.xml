@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.4.RELEASE</version>
+		<version>2.4.1</version>
 	</parent>
-	<groupId>com.nb6868.onex</groupId>
-	<artifactId>xcoder</artifactId>
+	<groupId>com.nb6868</groupId>
+	<artifactId>onex-coder</artifactId>
 	<version>0.0.1</version>
-	<name>xcoder</name>
+	<name>onex-coder</name>
 	<packaging>jar</packaging>
 	<description>OneX Code Generator</description>
 

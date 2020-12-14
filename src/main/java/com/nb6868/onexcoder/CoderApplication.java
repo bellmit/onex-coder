@@ -1,4 +1,4 @@
-package com.nb6868.onex.xcoder;
+package com.nb6868.onexcoder;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,10 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Charles zhangchaoxu@gmail.com
  */
 @SpringBootApplication
-public class XCoderApplication {
+public class CoderApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(XCoderApplication.class, args);
+		SpringApplication.run(CoderApplication.class, args);
 	}
 
 }
