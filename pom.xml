@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.nb6868</groupId>
 	<artifactId>onex-coder</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0</version>
 	<name>onex-coder</name>
 	<packaging>jar</packaging>
 	<description>OneX Code Generator</description>
