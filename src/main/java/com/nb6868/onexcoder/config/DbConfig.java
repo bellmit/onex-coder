@@ -21,24 +21,12 @@ public class DbConfig {
 
     @Autowired
     private MySqlGeneratorDao mySqlGeneratorDao;
-    @Autowired
-    private OracleGeneratorDao oracleGeneratorDao;
-    @Autowired
-    private SqlServerGeneratorDao sqlServerGeneratorDao;
-    @Autowired
-    private PostgreSqlGeneratorDao postgreSqlGeneratorDao;
 
     @Bean
     @Primary
     public GeneratorDao getGeneratorDao() {
         if ("mysql".equalsIgnoreCase(database)) {
             return mySqlGeneratorDao;
-        } else if ("oracle".equalsIgnoreCase(database)) {
-            return oracleGeneratorDao;
-        } else if ("sqlserver".equalsIgnoreCase(database)) {
-            return sqlServerGeneratorDao;
-        } else if ("postgresql".equalsIgnoreCase(database)) {
-            return postgreSqlGeneratorDao;
         } else {
             throw new OnexException("不支持当前数据库：" + database);
         }
