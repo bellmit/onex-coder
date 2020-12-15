@@ -1,11 +1,10 @@
 package com.nb6868.onexcoder.service;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nb6868.onexcoder.dao.GeneratorDao;
 import com.nb6868.onexcoder.utils.GenUtils;
-import com.nb6868.onexcoder.utils.Query;
 import com.nb6868.onexcoder.utils.PageUtils;
+import com.nb6868.onexcoder.utils.Query;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

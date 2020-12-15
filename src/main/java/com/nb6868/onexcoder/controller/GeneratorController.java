@@ -21,35 +21,35 @@ import java.util.Map;
  * @author Charles (zhanngchaoxu@gmail.com)
  */
 @Controller
-@RequestMapping("/sys/generator")
-public class SysGeneratorController {
+@RequestMapping("/generator")
+public class GeneratorController {
 
-	@Autowired
-	private SysGeneratorService sysGeneratorService;
+    @Autowired
+    private SysGeneratorService sysGeneratorService;
 
-	/**
-	 * 列表
-	 */
-	@ResponseBody
-	@RequestMapping("/list")
-	public Result list(@RequestParam Map<String, Object> params){
-		PageUtils pageUtil = sysGeneratorService.queryList(new Query(params));
+    /**
+     * 列表
+     */
+    @ResponseBody
+    @RequestMapping("/page")
+    public Result list(@RequestParam Map<String, Object> params) {
+        PageUtils pageUtil = sysGeneratorService.queryList(new Query(params));
 
-		return Result.ok().put("page", pageUtil);
-	}
+        return Result.ok().put("page", pageUtil);
+    }
 
-	/**
-	 * 生成代码
-	 */
-	@RequestMapping("/code")
-	public void code(String tables, HttpServletResponse response) throws IOException{
-		byte[] data = sysGeneratorService.generatorCode(tables.split(","));
+    /**
+     * 生成代码
+     */
+    @RequestMapping("/code")
+    public void code(String tables, HttpServletResponse response) throws IOException {
+        byte[] data = sysGeneratorService.generatorCode(tables.split(","));
 
-		response.reset();
+        response.reset();
         response.setHeader("Content-Disposition", "attachment; filename=\"x.zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
 
         IOUtils.write(data, response.getOutputStream());
-	}
+    }
 }
