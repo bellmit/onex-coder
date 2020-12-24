@@ -2,17 +2,18 @@ package com.nb6868.onexcoder;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
  * XCoder Application
  *
  * @author Charles zhangchaoxu@gmail.com
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class CoderApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CoderApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(CoderApplication.class, args);
+    }
 
 }

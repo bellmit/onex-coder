@@ -1,8 +1,6 @@
 package com.nb6868.onexcoder.controller;
 
-import com.nb6868.onexcoder.service.SysGeneratorService;
-import com.nb6868.onexcoder.utils.PageUtils;
-import com.nb6868.onexcoder.utils.Query;
+import com.nb6868.onexcoder.service.TableSchemaService;
 import com.nb6868.onexcoder.utils.Result;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,41 +10,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Map;
 
 /**
- * 代码生成器
+ * 表结构
  *
  * @author Charles (zhanngchaoxu@gmail.com)
  */
 @Controller
-@RequestMapping("/generator")
-public class GeneratorController {
+@RequestMapping("/tableSchema")
+public class TableSchemaController {
 
     @Autowired
-    private SysGeneratorService sysGeneratorService;
+    private TableSchemaService tableSchemaService;
 
     /**
      * 列表
      */
     @ResponseBody
-    @RequestMapping("/page")
-    public Result list(@RequestParam Map<String, Object> params) {
-        PageUtils pageUtil = sysGeneratorService.queryList(new Query(params));
-
-        return Result.ok().put("page", pageUtil);
+    @RequestMapping("/list")
+    public Result list(@RequestParam(required = false) String keywords) {
+        try {
+            return Result.ok().put("data", tableSchemaService.queryList(keywords));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error();
+        }
     }
 
     /**
      * 生成代码
      */
-    @RequestMapping("/code")
-    public void code(String tables, HttpServletResponse response) throws IOException {
-        byte[] data = sysGeneratorService.generatorCode(tables.split(","));
+    @RequestMapping("/generatorCode")
+    public void code(HttpServletResponse response, @RequestParam String tables) throws Exception {
+        byte[] data = tableSchemaService.generatorCode(tables.split(","));
 
         response.reset();
-        response.setHeader("Content-Disposition", "attachment; filename=\"x.zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + tables + ".zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
 

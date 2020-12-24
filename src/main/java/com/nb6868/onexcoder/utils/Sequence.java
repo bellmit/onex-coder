@@ -1,8 +1,7 @@
 package com.nb6868.onexcoder.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
@@ -15,9 +14,9 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author http://git.oschina.net/yu120/sequence
  */
+@Slf4j
 public class Sequence {
 
-    private static final Log logger = LogFactory.getLog(Sequence.class);
     /**
      * 时间起始标记点，作为基准，一般取系统的最近时间（一旦确定不能变动）
      */
@@ -119,7 +118,7 @@ public class Sequence {
                 }
             }
         } catch (Exception e) {
-            logger.warn(" getDatacenterId: " + e.getMessage());
+            System.out.println("getDatacenterId: " + e.getMessage());
         }
         return id;
     }
