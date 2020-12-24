@@ -28,9 +28,9 @@ public class TableSchemaController {
      */
     @ResponseBody
     @RequestMapping("/list")
-    public Result list(@RequestParam(required = false) String keywords) {
+    public Result list(@RequestParam(required = false) String tableName) {
         try {
-            return Result.ok().put("data", tableSchemaService.queryList(keywords));
+            return Result.ok().put("data", tableSchemaService.queryList(tableName));
         } catch (Exception e) {
             e.printStackTrace();
             return Result.error();
@@ -41,11 +41,11 @@ public class TableSchemaController {
      * 生成代码
      */
     @RequestMapping("/generatorCode")
-    public void code(HttpServletResponse response, @RequestParam String tables) throws Exception {
-        byte[] data = tableSchemaService.generatorCode(tables.split(","));
+    public void code(HttpServletResponse response, @RequestParam String tableName) throws Exception {
+        byte[] data = tableSchemaService.generatorCode(tableName.split(","));
 
         response.reset();
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + tables + ".zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + tableName + ".zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
 

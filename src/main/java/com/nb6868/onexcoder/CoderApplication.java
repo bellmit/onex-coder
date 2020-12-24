@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
- * XCoder Application
+ * Coder Application
  *
  * @author Charles zhangchaoxu@gmail.com
  */

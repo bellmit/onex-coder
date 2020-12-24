@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 
 @SpringBootTest
-class XcoderApplicationTests {
+class CoderApplicationTests {
 
 	@Test
 	void contextLoads() {
