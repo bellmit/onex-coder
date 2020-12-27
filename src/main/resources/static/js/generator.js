@@ -1,7 +1,7 @@
 $(function () {
     $("#jqGrid").jqGrid({
         url: 'tableSchema/list',
-        datatype: "json",
+        datatype: "local",
         ajaxGridOptions: {
             contentType: "application/json",
         },
@@ -41,17 +41,35 @@ var vm = new Vue({
     el: '#rrapp',
     data: {
         q: {
-            tableNames: null,
-            driverClassName: 'com.mysql.cj.jdbc.Driver',
-            dbUrl: 'jdbc:mysql://127.0.0.1:3306/test',
-            dbUsername: 'root',
-            dbPassword: 'root',
+            driverClassName: null,
+            dbUrl: null,
+            dbUsername: null,
+            dbPassword: null,
+            tableNames: null
         }
     },
+    created () {
+        // 启动后先加载本地数据
+        this.loadLocalData()
+    },
     methods: {
+        // 加载本地配置数据
+        loadLocalData() {
+            this.q.driverClassName = localStorage.getItem("driverClassName") || 'com.mysql.cj.jdbc.Driver'
+            this.q.dbUrl = localStorage.getItem("dbUrl") || 'jdbc:mysql://127.0.0.1:3306/test'
+            this.q.dbUsername = localStorage.getItem("dbUsername") || 'root'
+            this.q.dbPassword = localStorage.getItem("dbPassword") || 'root'
+            this.q.tableNames = localStorage.getItem("tableNames") || ''
+        },
         // 查询
         query: function () {
-            $("#jqGrid").jqGrid('setGridParam', {postData: vm.q}).trigger("reloadGrid");
+            // 将配置存到本地
+            localStorage.setItem("driverClassName", this.q.driverClassName)
+            localStorage.setItem("dbUrl", this.q.dbUrl)
+            localStorage.setItem("dbUsername", this.q.dbUsername)
+            localStorage.setItem("dbPassword", this.q.dbPassword)
+            localStorage.setItem("tableNames", this.q.tableNames)
+            $("#jqGrid").jqGrid('setGridParam', {datatype: 'json', postData: vm.q}).trigger("reloadGrid");
         },
         // 生成代码
         generateCode: function () {
