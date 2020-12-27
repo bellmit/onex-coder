@@ -2,6 +2,13 @@ $(function () {
     $("#jqGrid").jqGrid({
         url: 'tableSchema/list',
         datatype: "json",
+        ajaxGridOptions: {
+            contentType: "application/json",
+        },
+        mtype: "POST",
+        serializeGridData: function(postData) {
+            return JSON.stringify(postData);
+        },
         colModel: [
             {label: '表名', name: 'tableName', width: 100, key: true},
             {label: '表备注', name: 'tableComment', width: 100},
@@ -34,19 +41,33 @@ var vm = new Vue({
     el: '#rrapp',
     data: {
         q: {
-            tableName: null
+            tableNames: null,
+            driverClassName: 'com.mysql.cj.jdbc.Driver',
+            dbUrl: 'jdbc:mysql://127.0.0.1:3306/test',
+            dbUsername: 'root',
+            dbPassword: 'root',
         }
     },
     methods: {
+        // 查询
         query: function () {
-            $("#jqGrid").jqGrid('setGridParam', {postData: {'tableName': vm.q.tableName}}).trigger("reloadGrid");
+            $("#jqGrid").jqGrid('setGridParam', {postData: vm.q}).trigger("reloadGrid");
         },
-        generator: function () {
+        // 生成代码
+        generateCode: function () {
             var tableNames = getSelectedRows();
             if (tableNames == null) {
                 return;
             }
-            location.href = "tableSchema/generatorCode?tableName=" + tableNames.join();
+            location.href = "tableSchema/generateCode?tableNames=" + tableNames.join();
+        },
+        // 生成文档
+        generateDoc: function () {
+            var tableNames = getSelectedRows();
+            if (tableNames == null) {
+                return;
+            }
+            location.href = "tableSchema/generateDoc?tableNames=" + tableNames.join();
         }
     }
 });

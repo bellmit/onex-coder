@@ -35,27 +35,22 @@ public class TableSchemaService {
      * 初始化db link
      */
     private DataSource getDataSource(DbConfigRequest request) {
-        //数据源
+        // 数据源
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setDriverClassName(request.getDriverClassName());
         hikariConfig.setJdbcUrl(request.getDbUrl());
         hikariConfig.setUsername(request.getDbUsername());
         hikariConfig.setPassword(request.getDbPassword());
-        //设置可以获取tables remarks信息
+        // 设置可以获取tables remarks信息
         hikariConfig.addDataSourceProperty("useInformationSchema", "true");
         hikariConfig.setMinimumIdle(2);
         hikariConfig.setMaximumPoolSize(5);
         return new HikariDataSource(hikariConfig);
     }
 
-    private Statement getDbStatement(DataSource dataSource) {
-        try {
-            Connection dbConnection = dataSource.getConnection();
-            return dbConnection.createStatement();
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            return null;
-        }
+    private Statement getDbStatement(DataSource dataSource) throws SQLException {
+        Connection dbConnection = dataSource.getConnection();
+        return dbConnection.createStatement();
     }
 
     public List<Map<String, Object>> queryList(DbConfigRequest request) throws Exception {
