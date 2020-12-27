@@ -1,13 +1,12 @@
 package com.nb6868.onexcoder.controller;
 
+import com.nb6868.onexcoder.entity.DbConfigRequest;
 import com.nb6868.onexcoder.service.TableSchemaService;
 import com.nb6868.onexcoder.utils.Result;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,28 +26,36 @@ public class TableSchemaController {
      * 列表
      */
     @ResponseBody
-    @RequestMapping("/list")
-    public Result list(@RequestParam(required = false) String tableName) {
+    @PostMapping("list")
+    public Result<?> list(@RequestBody DbConfigRequest request) {
         try {
-            return Result.ok().put("data", tableSchemaService.queryList(tableName));
+            return new Result<>().success(tableSchemaService.queryList(request));
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.error();
+            return new Result<>().error();
         }
     }
 
     /**
      * 生成代码
      */
-    @RequestMapping("/generatorCode")
-    public void code(HttpServletResponse response, @RequestParam String tableName) throws Exception {
-        byte[] data = tableSchemaService.generatorCode(tableName.split(","));
+    @PostMapping("/generateCode")
+    public void generateCode(HttpServletResponse response, @RequestBody DbConfigRequest request) throws Exception {
+        byte[] data = tableSchemaService.generateCode(request);
 
         response.reset();
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + tableName + ".zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + request.getTableNames() + ".zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
 
         IOUtils.write(data, response.getOutputStream());
+    }
+
+    /**
+     * 生成数据库文档
+     */
+    @RequestMapping("/generateDoc")
+    public void generateDoc(HttpServletResponse response, @RequestBody DbConfigRequest request) {
+        tableSchemaService.generateDoc(request);
     }
 }

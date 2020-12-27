@@ -1,54 +1,84 @@
 package com.nb6868.onexcoder.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.Instant;
 
 /**
- * 返回数据
+ * API 返回结果
+ * 参考 {https://gitee.com/baomidou/mybatis-plus/blob/3.0/mybatis-plus-extension/src/main/java/com/baomidou/mybatisplus/extension/api/R.java}
  *
  * @author Charles zhangchaoxu@gmail.com
  */
-public class Result extends HashMap<String, Object> {
-	private static final long serialVersionUID = 1L;
+@Data
+@Accessors(chain = true)
+public class Result<T> implements Serializable {
 
-	public Result() {
-		put("code", 0);
-	}
+    private static final long serialVersionUID = 1L;
 
-	public static Result error() {
-		return error(500, "未知异常，请联系管理员");
-	}
+    /**
+     * 消息码:0表示成功,其他值表示失败
+     */
+    private int code = 0;
 
-	public static Result error(String msg) {
-		return error(500, msg);
-	}
+    /**
+     * 消息内容
+     */
+    private String msg = "success";
 
-	public static Result error(int code, String msg) {
-		Result r = new Result();
-		r.put("code", code);
-		r.put("msg", msg);
-		return r;
-	}
+    /**
+     * 消息数据
+     */
+    private T data;
 
-	public static Result ok(String msg) {
-		Result r = new Result();
-		r.put("msg", msg);
-		return r;
-	}
+    /**
+     * 消息Unix时间戳
+     */
+    private Long time = Instant.now().toEpochMilli();
 
-	public static Result ok(Map<String, Object> map) {
-		Result r = new Result();
-		r.putAll(map);
-		return r;
-	}
+    public boolean isSuccess(){
+        return code == 0;
+    }
 
-	public static Result ok() {
-		return new Result();
-	}
+    public Result<T> success() {
+        return this;
+    }
 
-	@Override
-	public Result put(String key, Object value) {
-		super.put(key, value);
-		return this;
-	}
+    public Result<T> success(T data) {
+        this.setData(data);
+        return this;
+    }
+
+    public Result<T> success(String msg, T data) {
+        this.msg = msg;
+        this.setData(data);
+        return this;
+    }
+
+    public Result<T> error() {
+        this.code = 500;
+        this.msg = "未知异常，请联系管理员";
+        return this;
+    }
+
+    public Result<T> error(int code) {
+        this.code = code;
+        this.msg = "未知异常，请联系管理员";
+        return this;
+    }
+
+    public Result<T> error(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+        return this;
+    }
+
+    public Result<T> error(String msg) {
+        this.code = 500;
+        this.msg = msg;
+        return this;
+    }
+
 }

@@ -6,6 +6,7 @@ import cn.smallbun.screw.core.engine.EngineFileType;
 import cn.smallbun.screw.core.engine.EngineTemplateType;
 import cn.smallbun.screw.core.execute.DocumentationExecute;
 import cn.smallbun.screw.core.process.ProcessConfig;
+import com.nb6868.onexcoder.entity.DbConfigRequest;
 import com.nb6868.onexcoder.utils.GenUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -19,10 +20,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -33,40 +31,43 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class TableSchemaService {
 
-    DataSource dataSource;
-    Statement dbStatement;
-
     /**
      * 初始化db link
      */
-    private void initDb() {
+    private DataSource getDataSource(DbConfigRequest request) {
         //数据源
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        hikariConfig.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/test");
-        hikariConfig.setUsername("root");
-        hikariConfig.setPassword("root");
+        hikariConfig.setDriverClassName(request.getDriverClassName());
+        hikariConfig.setJdbcUrl(request.getDbUrl());
+        hikariConfig.setUsername(request.getDbUsername());
+        hikariConfig.setPassword(request.getDbPassword());
         //设置可以获取tables remarks信息
         hikariConfig.addDataSourceProperty("useInformationSchema", "true");
         hikariConfig.setMinimumIdle(2);
         hikariConfig.setMaximumPoolSize(5);
-        dataSource = new HikariDataSource(hikariConfig);
+        return new HikariDataSource(hikariConfig);
+    }
+
+    private Statement getDbStatement(DataSource dataSource) {
         try {
             Connection dbConnection = dataSource.getConnection();
-            dbStatement = dbConnection.createStatement();
+            return dbConnection.createStatement();
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
+            return null;
         }
     }
 
-    public List<Map<String, Object>> queryList(String tableName) throws Exception {
-        initDb();
+    public List<Map<String, Object>> queryList(DbConfigRequest request) throws Exception {
+        // 获得数据库连接
+        Statement statement = getDbStatement(getDataSource(request));
+
         StringBuilder sql = new StringBuilder("select table_name, engine, table_comment, create_time from information_schema.tables where table_schema = (select database())");
-        if (!ObjectUtils.isEmpty(tableName)) {
-            sql.append(" and table_name like concat('%").append(tableName).append("%')");
+        if (!ObjectUtils.isEmpty(request.getTableNames())) {
+            sql.append(" and table_name like concat('%").append(request.getTableNames()).append("%')");
         }
         sql.append(" order by create_time desc");
-        ResultSet resultSet = dbStatement.executeQuery(sql.toString());
+        ResultSet resultSet = statement.executeQuery(sql.toString());
         List<Map<String, Object>> resultMapList = new ArrayList<>();
         while (resultSet.next()) {
             Map<String, Object> map = new HashMap<>();
@@ -76,15 +77,17 @@ public class TableSchemaService {
             map.put("createTime", resultSet.getDate("create_time"));
             resultMapList.add(map);
         }
-        dbStatement.close();
+        statement.close();
         return resultMapList;
     }
 
-    public Map<String, String> queryTable(String tableName) throws Exception {
-        initDb();
+    public Map<String, String> queryTable(DbConfigRequest request) throws Exception {
+        // 获得数据库连接
+        Statement statement = getDbStatement(getDataSource(request));
+
         StringBuilder sql = new StringBuilder("select table_name, engine, table_comment, create_time from information_schema.tables where" +
-                " table_schema = (select database()) and table_name = '").append(tableName).append("'");
-        ResultSet resultSet = dbStatement.executeQuery(sql.toString());
+                " table_schema = (select database()) and table_name = '").append(request.getTableNames()).append("'");
+        ResultSet resultSet = statement.executeQuery(sql.toString());
         Map<String, String> map = null;
         while (resultSet.next()) {
             map = new HashMap<>();
@@ -93,15 +96,17 @@ public class TableSchemaService {
             map.put("tableComment", resultSet.getString("table_comment"));
             map.put("createTime", resultSet.getString("create_time"));
         }
-        dbStatement.close();
+        statement.close();
         return map;
     }
 
-    public List<Map<String, String>> queryColumns(String tableName) throws Exception {
-        initDb();
+    public List<Map<String, String>> queryColumns(DbConfigRequest request) throws Exception {
+        // 获得数据库连接
+        Statement statement = getDbStatement(getDataSource(request));
+
         StringBuilder sql = new StringBuilder("select column_name, data_type, column_comment, column_key, extra from information_schema.columns" +
-                " where table_name = '").append(tableName).append("'").append(" and table_schema = (select database()) order by ordinal_position");
-        ResultSet resultSet = dbStatement.executeQuery(sql.toString());
+                " where table_name = '").append(request.getTableNames()).append("'").append(" and table_schema = (select database()) order by ordinal_position");
+        ResultSet resultSet = statement.executeQuery(sql.toString());
         List<Map<String, String>> resultMapList = new ArrayList<>();
         while (resultSet.next()) {
             Map<String, String> map = new HashMap<>();
@@ -112,18 +117,21 @@ public class TableSchemaService {
             map.put("extra", resultSet.getString("extra"));
             resultMapList.add(map);
         }
-        dbStatement.close();
+        statement.close();
         return resultMapList;
     }
 
-    public byte[] generatorCode(String[] tableNames) throws Exception {
+    public byte[] generateCode(DbConfigRequest request) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(outputStream);
+        // 获得表
+        String[] tableNames = request.getTableNames().split(",");
         for (String tableName : tableNames) {
             // 查询表信息
-            Map<String, String> table = queryTable(tableName);
+            request.setTableNames(tableName);
+            Map<String, String> table = queryTable(request);
             // 查询列信息
-            List<Map<String, String>> columns = queryColumns(tableName);
+            List<Map<String, String>> columns = queryColumns(request);
             // 生成代码
             GenUtils.generatorCode(table, columns, zip);
         }
@@ -139,53 +147,27 @@ public class TableSchemaService {
      * 生成数据库文档
      * see {https://github.com/pingfangushi/screw}
      */
-    public void generatorDoc(String[] tableNames) {
-        initDb();
+    public void generateDoc(DbConfigRequest request) {
+        DataSource dataSource = getDataSource(request);
         //生成配置
         EngineConfig engineConfig = EngineConfig.builder()
                 //生成文件路径
                 .fileOutputDir("fileOutputDir")
                 //打开目录
                 .openOutputDir(true)
-                //文件类型
                 .fileType(EngineFileType.HTML)
-                //生成模板实现
                 .produceType(EngineTemplateType.velocity)
-                .fileName("自定义文件名称").build();
-        //忽略表
-        ArrayList<String> ignoreTableName = new ArrayList<>();
-        ignoreTableName.add("test_user");
-        ignoreTableName.add("test_group");
-        //忽略表前缀
-        ArrayList<String> ignorePrefix = new ArrayList<>();
-        ignorePrefix.add("test_");
-        //忽略表后缀
-        ArrayList<String> ignoreSuffix = new ArrayList<>();
-        ignoreSuffix.add("_test");
+                .fileName(request.getDocFileName()).build();
+
         ProcessConfig processConfig = ProcessConfig.builder()
                 //根据名称指定表生成
-                .designatedTableName(new ArrayList<>())
-                //根据表前缀生成
-                .designatedTablePrefix(new ArrayList<>())
-                //根据表后缀生成
-                .designatedTableSuffix(new ArrayList<>())
-                //忽略表名
-                .ignoreTableName(ignoreTableName)
-                //忽略表前缀
-                .ignoreTablePrefix(ignorePrefix)
-                //忽略表后缀
-                .ignoreTableSuffix(ignoreSuffix).build();
+                .designatedTableName(Arrays.asList(request.getTableNames().split(","))).build();
         //配置
         Configuration config = Configuration.builder()
-                //版本
-                .version("1.0.0")
-                //描述
-                .description("数据库设计文档生成")
-                //数据源
+                .version(request.getDocVersion())
+                .description(request.getDocDescription())
                 .dataSource(dataSource)
-                //生成配置
                 .engineConfig(engineConfig)
-                //生成配置
                 .produceConfig(processConfig)
                 .build();
         new DocumentationExecute(config).execute();
