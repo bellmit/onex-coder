@@ -44,6 +44,7 @@ public class TableSchemaController {
         byte[] data = tableSchemaService.generateCode(request);
 
         response.reset();
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + request.getTableNames() + ".zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");

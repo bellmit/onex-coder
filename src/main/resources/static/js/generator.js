@@ -80,7 +80,8 @@ var vm = new Vue({
             }
             this.q.tableNames = tableNames.join(",")
             $.fileDownload("tableSchema/generateCode", {
-                data:  vm.q,
+                httpMethod: 'POST',
+                data: JSON.stringify(vm.q),
                 successCallback: function (url) {
                     alert("导出完成！");
                 },
