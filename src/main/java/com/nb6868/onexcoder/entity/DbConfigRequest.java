@@ -16,6 +16,7 @@ public class DbConfigRequest implements Serializable {
     private String dbUrl;
     private String dbUsername;
     private String dbPassword;
+    private String keyword;
     private String tableNames;
 
     /**

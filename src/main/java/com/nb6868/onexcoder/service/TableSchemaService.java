@@ -58,8 +58,8 @@ public class TableSchemaService {
         Statement statement = getDbStatement(getDataSource(request));
 
         StringBuilder sql = new StringBuilder("select table_name, engine, table_comment, create_time from information_schema.tables where table_schema = (select database())");
-        if (!ObjectUtils.isEmpty(request.getTableNames())) {
-            sql.append(" and table_name like concat('%").append(request.getTableNames()).append("%')");
+        if (!ObjectUtils.isEmpty(request.getKeyword())) {
+            sql.append(" and table_name like concat('%").append(request.getKeyword()).append("%')");
         }
         sql.append(" order by create_time desc");
         ResultSet resultSet = statement.executeQuery(sql.toString());

@@ -6,7 +6,7 @@ $(function () {
             contentType: "application/json",
         },
         mtype: "POST",
-        serializeGridData: function(postData) {
+        serializeGridData: function (postData) {
             return JSON.stringify(postData);
         },
         colModel: [
@@ -45,10 +45,11 @@ var vm = new Vue({
             dbUrl: null,
             dbUsername: null,
             dbPassword: null,
+            keyword: null,
             tableNames: null
         }
     },
-    created () {
+    created() {
         // 启动后先加载本地数据
         this.loadLocalData()
     },
@@ -59,7 +60,7 @@ var vm = new Vue({
             this.q.dbUrl = localStorage.getItem("dbUrl") || 'jdbc:mysql://127.0.0.1:3306/test'
             this.q.dbUsername = localStorage.getItem("dbUsername") || 'root'
             this.q.dbPassword = localStorage.getItem("dbPassword") || 'root'
-            this.q.tableNames = localStorage.getItem("tableNames") || ''
+            this.q.keyword = localStorage.getItem("keyword") || ''
         },
         // 查询
         query: function () {
@@ -68,7 +69,7 @@ var vm = new Vue({
             localStorage.setItem("dbUrl", this.q.dbUrl)
             localStorage.setItem("dbUsername", this.q.dbUsername)
             localStorage.setItem("dbPassword", this.q.dbPassword)
-            localStorage.setItem("tableNames", this.q.tableNames)
+            localStorage.setItem("keyword", this.q.keyword)
             $("#jqGrid").jqGrid('setGridParam', {datatype: 'json', postData: vm.q}).trigger("reloadGrid");
         },
         // 生成代码
@@ -77,7 +78,33 @@ var vm = new Vue({
             if (tableNames == null) {
                 return;
             }
-            location.href = "tableSchema/generateCode?tableNames=" + tableNames.join();
+            this.q.tableNames = tableNames.join(",")
+            $.fileDownload("tableSchema/generateCode", {
+                data:  vm.q,
+                successCallback: function (url) {
+                    alert("导出完成！");
+                },
+                failCallback: function (html, url) {
+                    alert("导出失败，未知的异常。");
+                }
+            });
+            /*$.ajax({
+                type : "POST",
+                contentType: "application/json;charset=UTF-8",
+                url : "tableSchema/generateCode",
+                data : JSON.stringify(vm.q),
+                //请求成功
+                success : function(result) {
+
+                    console.log(result);
+                },
+                //请求失败，包含具体的错误信息
+                error : function(e){
+                    console.log(e.status);
+                    console.log(e.responseText);
+                }
+            });*/
+            // location.href = "tableSchema/generateCode?tableNames=" + tableNames.join();
         },
         // 生成文档
         generateDoc: function () {
@@ -85,6 +112,7 @@ var vm = new Vue({
             if (tableNames == null) {
                 return;
             }
+            this.q.tableNames = tableNames.join(",")
             location.href = "tableSchema/generateDoc?tableNames=" + tableNames.join();
         }
     }
