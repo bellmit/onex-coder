@@ -1,5 +1,6 @@
 package com.nb6868.onexcoder.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.nb6868.onexcoder.entity.DbConfigRequest;
 import com.nb6868.onexcoder.service.TableSchemaService;
 import com.nb6868.onexcoder.utils.Result;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
 
 /**
  * 表结构
@@ -39,8 +41,9 @@ public class TableSchemaController {
     /**
      * 生成代码
      */
-    @PostMapping("/generateCode")
-    public void generateCode(HttpServletResponse response, @RequestBody DbConfigRequest request) throws Exception {
+    @GetMapping("/generateCode")
+    public void generateCode(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
+        DbConfigRequest request = JSON.parseObject(Base64.getDecoder().decode(base64Request), DbConfigRequest.class);
         byte[] data = tableSchemaService.generateCode(request);
 
         response.reset();
@@ -55,8 +58,10 @@ public class TableSchemaController {
     /**
      * 生成数据库文档
      */
-    @RequestMapping("/generateDoc")
-    public void generateDoc(HttpServletResponse response, @RequestBody DbConfigRequest request) {
+    @GetMapping("/generateDoc")
+    public void generateDoc(HttpServletResponse response, @RequestParam String base64Request) {
+        DbConfigRequest request = JSON.parseObject(Base64.getDecoder().decode(base64Request), DbConfigRequest.class);
+
         tableSchemaService.generateDoc(request);
     }
 }

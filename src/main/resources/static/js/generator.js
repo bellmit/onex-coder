@@ -79,33 +79,7 @@ var vm = new Vue({
                 return;
             }
             this.q.tableNames = tableNames.join(",")
-            $.fileDownload("tableSchema/generateCode", {
-                httpMethod: 'POST',
-                data: JSON.stringify(vm.q),
-                successCallback: function (url) {
-                    alert("导出完成！");
-                },
-                failCallback: function (html, url) {
-                    alert("导出失败，未知的异常。");
-                }
-            });
-            /*$.ajax({
-                type : "POST",
-                contentType: "application/json;charset=UTF-8",
-                url : "tableSchema/generateCode",
-                data : JSON.stringify(vm.q),
-                //请求成功
-                success : function(result) {
-
-                    console.log(result);
-                },
-                //请求失败，包含具体的错误信息
-                error : function(e){
-                    console.log(e.status);
-                    console.log(e.responseText);
-                }
-            });*/
-            // location.href = "tableSchema/generateCode?tableNames=" + tableNames.join();
+            location.href = "tableSchema/generateCode?base64Request=" + window.btoa(JSON.stringify(vm.q))
         },
         // 生成文档
         generateDoc: function () {
@@ -114,7 +88,7 @@ var vm = new Vue({
                 return;
             }
             this.q.tableNames = tableNames.join(",")
-            location.href = "tableSchema/generateDoc?tableNames=" + tableNames.join();
+            location.href = "tableSchema/generateDoc?base64Request=" + window.btoa(JSON.stringify(vm.q))
         }
     }
 });
