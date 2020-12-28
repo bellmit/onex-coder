@@ -8,5 +8,20 @@
 需要确保数据库开放了外网访问,并且运行程序所在服务器与数据库服务器网络通畅。      
 程序提供web支持，服务器端不存储数据库连接的信息，若担心安全问题，可以下载源程序在本地运行。
 
+## 部署脚本
+```shell
+process=`ps -fe|grep "onex-coder.jar" |grep -ivE "grep|cron" |awk '{print $2}'`
+if [ !$process ];
+then
+	echo "stop onex-coder.jar process $process ....."
+	kill -9 $process
+	sleep 1
+fi
+
+echo "start onex-coder.jar process....."
+nohup java -jar onex-coder.jar --server.servlet.context-path=/ 2>&1 | cronolog log.%Y-%m-%d.out >> /dev/null &
+echo "start onex-coder.jar success!"
+```
+
 ## Thanks
 1. 表结构文档生成功能由[SCREW](https://github.com/pingfangushi/screw)提供技术支持
