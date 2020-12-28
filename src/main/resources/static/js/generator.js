@@ -46,7 +46,10 @@ var vm = new Vue({
             dbUsername: null,
             dbPassword: null,
             keyword: null,
-            tableNames: null
+            tableNames: null,
+            docFileName: '数据库文档',
+            docVersion: '1.0.0',
+            docDescription: '文档说明'
         }
     },
     created() {
@@ -79,7 +82,7 @@ var vm = new Vue({
                 return;
             }
             this.q.tableNames = tableNames.join(",")
-            location.href = "tableSchema/generateCode?base64Request=" + window.btoa(JSON.stringify(vm.q))
+            location.href = "tableSchema/generateCode?base64Request=" + encodeURIComponent(JSON.stringify(vm.q))
         },
         // 生成文档
         generateDoc: function () {
@@ -88,7 +91,7 @@ var vm = new Vue({
                 return;
             }
             this.q.tableNames = tableNames.join(",")
-            location.href = "tableSchema/generateDoc?base64Request=" + window.btoa(JSON.stringify(vm.q))
+            location.href = "tableSchema/generateDoc?base64Request=" + encodeURIComponent(JSON.stringify(vm.q))
         }
     }
 });

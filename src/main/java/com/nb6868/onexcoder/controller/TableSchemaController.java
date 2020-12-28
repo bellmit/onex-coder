@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Base64;
+import java.net.URLDecoder;
 
 /**
  * 表结构
@@ -43,7 +43,7 @@ public class TableSchemaController {
      */
     @GetMapping("/generateCode")
     public void generateCode(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
-        DbConfigRequest request = JSON.parseObject(Base64.getDecoder().decode(base64Request), DbConfigRequest.class);
+        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, "utf-8"), DbConfigRequest.class);
         byte[] data = tableSchemaService.generateCode(request);
 
         response.reset();
@@ -59,8 +59,8 @@ public class TableSchemaController {
      * 生成数据库文档
      */
     @GetMapping("/generateDoc")
-    public void generateDoc(HttpServletResponse response, @RequestParam String base64Request) {
-        DbConfigRequest request = JSON.parseObject(Base64.getDecoder().decode(base64Request), DbConfigRequest.class);
+    public void generateDoc(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
+        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, "utf-8"), DbConfigRequest.class);
 
         tableSchemaService.generateDoc(request);
     }
