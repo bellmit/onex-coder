@@ -47,9 +47,10 @@ var vm = new Vue({
             dbPassword: null,
             keyword: null,
             tableNames: null,
-            docFileName: '数据库文档',
+            docFileName: 'dbdoc',
             docVersion: '1.0.0',
-            docDescription: '文档说明'
+            docDescription: '文档说明',
+            docFileType: 'html'
         }
     },
     created() {

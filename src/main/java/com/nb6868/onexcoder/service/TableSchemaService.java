@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -142,7 +143,7 @@ public class TableSchemaService {
      * 生成数据库文档
      * see {https://github.com/pingfangushi/screw}
      */
-    public void generateDoc(DbConfigRequest request) {
+    public File generateDoc(DbConfigRequest request) throws Exception {
         DataSource dataSource = getDataSource(request);
         String timestamp = String.valueOf(System.currentTimeMillis());
         //生成配置
@@ -151,12 +152,18 @@ public class TableSchemaService {
                 .fileOutputDir("doc/" + timestamp)
                 //打开目录
                 .openOutputDir(false)
-                .fileType(EngineFileType.HTML)
                 .produceType(EngineTemplateType.velocity)
                 .fileName(request.getDocFileName());
-        EngineConfig engineConfigHTML = engineConfigBuilder.fileType(EngineFileType.HTML).build();
-        EngineConfig engineConfigMD = engineConfigBuilder.fileType(EngineFileType.MD).build();
-        EngineConfig engineConfigWORD = engineConfigBuilder.fileType(EngineFileType.WORD).build();
+        EngineConfig engineConfig;
+        if ("md".equalsIgnoreCase(request.getDocFileType())) {
+            engineConfig = engineConfigBuilder.fileType(EngineFileType.MD).build();
+        } else if ("html".equalsIgnoreCase(request.getDocFileType())) {
+            engineConfig = engineConfigBuilder.fileType(EngineFileType.HTML).build();
+        } else if ("word".equalsIgnoreCase(request.getDocFileType())) {
+            engineConfig = engineConfigBuilder.fileType(EngineFileType.WORD).build();
+        } else {
+            throw new Exception("不支持的文件类型");
+        }
 
         ProcessConfig processConfig = ProcessConfig.builder().designatedTableName(Arrays.asList(request.getTableNames().split(","))).build();
         Configuration.ConfigurationBuilder configBuilder = Configuration.builder()
@@ -164,9 +171,7 @@ public class TableSchemaService {
                 .description(request.getDocDescription())
                 .dataSource(dataSource)
                 .produceConfig(processConfig);
-        new DocumentationExecute(configBuilder.engineConfig(engineConfigHTML).build()).execute();
-        new DocumentationExecute(configBuilder.engineConfig(engineConfigMD).build()).execute();
-        new DocumentationExecute(configBuilder.engineConfig(engineConfigWORD).build()).execute();
-
+        new DocumentationExecute(configBuilder.engineConfig(engineConfig).build()).execute();
+        return new File(engineConfig.getFileOutputDir() + File.separator + engineConfig.getFileName() + engineConfig.getFileType().getFileSuffix());
     }
 }

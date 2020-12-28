@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.URLDecoder;
 
 /**
@@ -47,7 +48,6 @@ public class TableSchemaController {
         byte[] data = tableSchemaService.generateCode(request);
 
         response.reset();
-        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + request.getTableNames() + ".zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
@@ -62,6 +62,32 @@ public class TableSchemaController {
     public void generateDoc(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
         DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, "utf-8"), DbConfigRequest.class);
 
-        tableSchemaService.generateDoc(request);
+        File file = tableSchemaService.generateDoc(request);
+        byte[] data = file2byte(file);
+        response.reset();
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+        response.addHeader("Content-Length", "" + data.length);
+        response.setContentType("application/octet-stream; charset=UTF-8");
+
+        IOUtils.write(data, response.getOutputStream());
+    }
+
+    private byte[] file2byte(File tradeFile) {
+        byte[] buffer = null;
+        try {
+            FileInputStream fis = new FileInputStream(tradeFile);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] b = new byte[1024];
+            int n;
+            while ((n = fis.read(b)) != -1) {
+                bos.write(b, 0, n);
+            }
+            fis.close();
+            bos.close();
+            buffer = bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buffer;
     }
 }
