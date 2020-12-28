@@ -144,27 +144,29 @@ public class TableSchemaService {
      */
     public void generateDoc(DbConfigRequest request) {
         DataSource dataSource = getDataSource(request);
+        String timestamp = String.valueOf(System.currentTimeMillis());
         //生成配置
-        EngineConfig engineConfig = EngineConfig.builder()
+        EngineConfig.EngineConfigBuilder engineConfigBuilder = EngineConfig.builder()
                 //生成文件路径
-                .fileOutputDir("fileOutputDir")
+                .fileOutputDir("doc/" + timestamp)
                 //打开目录
-                .openOutputDir(true)
+                .openOutputDir(false)
                 .fileType(EngineFileType.HTML)
                 .produceType(EngineTemplateType.velocity)
-                .fileName(request.getDocFileName()).build();
+                .fileName(request.getDocFileName());
+        EngineConfig engineConfigHTML = engineConfigBuilder.fileType(EngineFileType.HTML).build();
+        EngineConfig engineConfigMD = engineConfigBuilder.fileType(EngineFileType.MD).build();
+        EngineConfig engineConfigWORD = engineConfigBuilder.fileType(EngineFileType.WORD).build();
 
-        ProcessConfig processConfig = ProcessConfig.builder()
-                //根据名称指定表生成
-                .designatedTableName(Arrays.asList(request.getTableNames().split(","))).build();
-        //配置
-        Configuration config = Configuration.builder()
+        ProcessConfig processConfig = ProcessConfig.builder().designatedTableName(Arrays.asList(request.getTableNames().split(","))).build();
+        Configuration.ConfigurationBuilder configBuilder = Configuration.builder()
                 .version(request.getDocVersion())
                 .description(request.getDocDescription())
                 .dataSource(dataSource)
-                .engineConfig(engineConfig)
-                .produceConfig(processConfig)
-                .build();
-        new DocumentationExecute(config).execute();
+                .produceConfig(processConfig);
+        new DocumentationExecute(configBuilder.engineConfig(engineConfigHTML).build()).execute();
+        new DocumentationExecute(configBuilder.engineConfig(engineConfigMD).build()).execute();
+        new DocumentationExecute(configBuilder.engineConfig(engineConfigWORD).build()).execute();
+
     }
 }

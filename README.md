@@ -9,4 +9,4 @@
 程序提供web支持，服务器端不存储数据库连接的信息，若担心安全问题，可以下载源程序在本地运行。
 
 ## Thanks
-1. 表结构文档生成功能由[SCREW](https://gitee.com/leshalv/screw)提供技术支持
+1. 表结构文档生成功能由[SCREW](https://github.com/pingfangushi/screw)提供技术支持
