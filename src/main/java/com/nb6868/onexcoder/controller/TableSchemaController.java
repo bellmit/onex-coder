@@ -4,13 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.nb6868.onexcoder.entity.DbConfigRequest;
 import com.nb6868.onexcoder.service.TableSchemaService;
 import com.nb6868.onexcoder.utils.Result;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
 import java.net.URLDecoder;
 
 /**
@@ -23,7 +24,7 @@ import java.net.URLDecoder;
 public class TableSchemaController {
 
     @Autowired
-    private TableSchemaService tableSchemaService;
+    TableSchemaService tableSchemaService;
 
     /**
      * 列表
@@ -60,10 +61,11 @@ public class TableSchemaController {
      */
     @GetMapping("/generateDoc")
     public void generateDoc(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
+
         DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, "utf-8"), DbConfigRequest.class);
 
         File file = tableSchemaService.generateDoc(request);
-        byte[] data = file2byte(file);
+        byte[] data = FileUtils.readFileToByteArray(file);
         response.reset();
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
         response.addHeader("Content-Length", "" + data.length);
@@ -72,22 +74,4 @@ public class TableSchemaController {
         IOUtils.write(data, response.getOutputStream());
     }
 
-    private byte[] file2byte(File tradeFile) {
-        byte[] buffer = null;
-        try {
-            FileInputStream fis = new FileInputStream(tradeFile);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[1024];
-            int n;
-            while ((n = fis.read(b)) != -1) {
-                bos.write(b, 0, n);
-            }
-            fis.close();
-            bos.close();
-            buffer = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return buffer;
-    }
 }

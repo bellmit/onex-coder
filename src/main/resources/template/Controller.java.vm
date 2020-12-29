@@ -80,7 +80,7 @@ public class ${className}Controller {
         ${className}DTO data = ${classname}Service.getDtoById(id);
         AssertUtils.isNull(data, ErrorCode.DB_RECORD_NOT_EXISTED);
 
-        return new Result<${className}DTO>().success(data);
+        return new Result<>().success(data);
     }
 
     @PostMapping("save")
