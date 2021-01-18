@@ -5,7 +5,7 @@
 代码生成器，通过表生成接口代码，VUE前端代码，并且支持生成数据库文档。
 
 ## 在线服务
-[Onex-Coder](https://onex-coder.nb6868.com)
+[Onex-Coder](http://onex-coder.nb6868.com)
 
 ## *注意*
 需要确保数据库开放了外网访问,并且运行程序所在服务器与数据库服务器网络通畅。      
