@@ -50,7 +50,8 @@ var vm = new Vue({
             docFileName: 'dbdoc',
             docVersion: '1.0.0',
             docDescription: '文档说明',
-            docFileType: 'html'
+            docFileType: 'html',
+            codeGenerateConfig: {}
         }
     },
     created() {

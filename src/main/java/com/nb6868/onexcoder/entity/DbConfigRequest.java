@@ -19,8 +19,6 @@ public class DbConfigRequest implements Serializable {
     private String keyword;
     private String tableNames;
 
-
-
     /**
      * doc开头的为 文档相关
      */

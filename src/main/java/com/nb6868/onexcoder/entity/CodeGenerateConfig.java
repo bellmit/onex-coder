@@ -13,6 +13,10 @@ import java.io.Serializable;
 public class CodeGenerateConfig implements Serializable {
 
     /**
+     * 表前缀
+     */
+    private String tablePrefix;
+    /**
      * 包名
      */
     private String packageName;
@@ -28,10 +32,6 @@ public class CodeGenerateConfig implements Serializable {
      * 作者邮箱
      */
     private String authorEmail;
-    /**
-     * 表前缀
-     */
-    private String tablePrefix;
     /**
      * 版本号
      */
