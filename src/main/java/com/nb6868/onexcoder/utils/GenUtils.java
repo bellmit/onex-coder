@@ -1,7 +1,8 @@
 package com.nb6868.onexcoder.utils;
 
-import com.nb6868.onexcoder.entity.TableEntity;
+import com.nb6868.onexcoder.entity.CodeGenerateConfig;
 import com.nb6868.onexcoder.entity.ColumnEntity;
+import com.nb6868.onexcoder.entity.TableEntity;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -15,6 +16,7 @@ import org.apache.velocity.app.Velocity;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,9 +49,16 @@ public class GenUtils {
 
 	/**
 	 * 生成代码
+	 *
+	 * @param table 生成的表
+	 * @param columns 生成的字段
+	 * @param codeGenerateConfig 生成配置
+	 * @param zip 输出的压缩包
 	 */
 	public static void generatorCode(Map<String, String> table,
-			List<Map<String, String>> columns, ZipOutputStream zip){
+									 List<Map<String, String>> columns,
+									 CodeGenerateConfig codeGenerateConfig,
+									 ZipOutputStream zip){
 		//配置信息
 		Configuration config = getConfig();
 		boolean hasBigDecimal = false;
@@ -58,12 +67,12 @@ public class GenUtils {
 		tableEntity.setTableName(table.get("tableName"));
 		tableEntity.setComments(table.get("tableComment"));
 		//表名转换成Java类名
-		String className = tableToJava(tableEntity.getTableName(), config.getString("tablePrefix"));
+		String className = tableToJava(tableEntity.getTableName(), codeGenerateConfig.getTablePrefix());
 		tableEntity.setClassName(className);
 		tableEntity.setClassname(StringUtils.uncapitalize(className));
 
 		//列信息
-		List<ColumnEntity> columsList = new ArrayList<>();
+		List<ColumnEntity> columnsList = new ArrayList<>();
 		for(Map<String, String> column : columns){
 			ColumnEntity columnEntity = new ColumnEntity();
 			columnEntity.setColumnName(column.get("columnName"));
@@ -87,9 +96,9 @@ public class GenUtils {
 				tableEntity.setPk(columnEntity);
 			}
 
-			columsList.add(columnEntity);
+			columnsList.add(columnEntity);
 		}
-		tableEntity.setColumns(columsList);
+		tableEntity.setColumns(columnsList);
 
 		// 没主键，则第一个字段为主键
 		if(tableEntity.getPk() == null){
@@ -109,18 +118,18 @@ public class GenUtils {
 		map.put("className", tableEntity.getClassName());
 		map.put("classname", tableEntity.getClassname());
 		map.put("pathName", tableEntity.getClassname());
-		if(StringUtils.isNotBlank(config.getString("tablePrefix"))){
-			map.put("pathNameDash", tableEntity.getTableName().replaceFirst(config.getString("tablePrefix") + "_", "").replace("_", "-"));
+		if(StringUtils.isNotBlank(codeGenerateConfig.getTablePrefix())){
+			map.put("pathNameDash", tableEntity.getTableName().replaceFirst(codeGenerateConfig.getTablePrefix() + "_", "").replace("_", "-"));
 		} else {
 			map.put("pathNameDash", tableEntity.getTableName().replace("_", "-"));
 		}
 		map.put("columns", tableEntity.getColumns());
 		map.put("hasBigDecimal", hasBigDecimal);
-		map.put("version", config.getString("version" ));
-		map.put("package", config.getString("package" ));
-		map.put("moduleName", config.getString("moduleName" ));
-		map.put("author", config.getString("author"));
-		map.put("email", config.getString("email"));
+		map.put("version", codeGenerateConfig.getVersion());
+		map.put("package", codeGenerateConfig.getPackageName());
+		map.put("moduleName", codeGenerateConfig.getModuleName());
+		map.put("author", codeGenerateConfig.getAuthorName());
+		map.put("email", codeGenerateConfig.getAuthorEmail());
 		map.put("datetime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 		map.put("date", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
@@ -129,7 +138,6 @@ public class GenUtils {
 		}
 
         VelocityContext context = new VelocityContext(map);
-
         //获取模板列表
 		List<String> templates = getTemplates();
 		for(String template : templates){
@@ -140,9 +148,9 @@ public class GenUtils {
 
 			try {
 				//添加到zip
-				zip.putNextEntry(new ZipEntry(getFileName(template, tableEntity.getClassName(), config.getString("package"), config.getString("moduleName"), (String) map.get("pathNameDash"))));
-				IOUtils.write(sw.toString(), zip, "UTF-8");
-				IOUtils.closeQuietly(sw);
+				zip.putNextEntry(new ZipEntry(getFileName(template, tableEntity.getClassName(), codeGenerateConfig.getPackageName( ), codeGenerateConfig.getModuleName( ), (String) map.get("pathNameDash"))));
+				IOUtils.write(sw.toString(), zip, StandardCharsets.UTF_8.name());
+				sw.close();
 				zip.closeEntry();
 			} catch (IOException e) {
 				throw new OnexException("渲染模板失败，表名：" + tableEntity.getTableName(), e);

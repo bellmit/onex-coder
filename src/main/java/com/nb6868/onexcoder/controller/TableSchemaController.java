@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 表结构
@@ -45,7 +46,7 @@ public class TableSchemaController {
      */
     @GetMapping("/generateCode")
     public void generateCode(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
-        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, "utf-8"), DbConfigRequest.class);
+        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, StandardCharsets.UTF_8.name()), DbConfigRequest.class);
         byte[] data = tableSchemaService.generateCode(request);
 
         response.reset();
@@ -61,8 +62,7 @@ public class TableSchemaController {
      */
     @GetMapping("/generateDoc")
     public void generateDoc(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
-
-        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, "utf-8"), DbConfigRequest.class);
+        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, StandardCharsets.UTF_8.name()), DbConfigRequest.class);
 
         File file = tableSchemaService.generateDoc(request);
         byte[] data = FileUtils.readFileToByteArray(file);

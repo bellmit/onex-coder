@@ -129,7 +129,7 @@ public class TableSchemaService {
             // 查询列信息
             List<Map<String, String>> columns = queryColumns(request);
             // 生成代码
-            GenUtils.generatorCode(table, columns, zip);
+            GenUtils.generatorCode(table, columns, request.getCodeGenerateConfig(), zip);
         }
         try {
             zip.close();
