@@ -52,7 +52,7 @@ var vm = new Vue({
             docDescription: '文档说明',
             docFileType: 'html',
             codeGenerateConfig: {
-                packageName: 'com.nb6868.onexboot',
+                packageName: 'com.nb6868.onexboot.api',
                 version: '',
                 moduleName: '',
                 tablePrefix: '',
