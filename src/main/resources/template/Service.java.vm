@@ -1,6 +1,6 @@
 package ${package}.modules.${moduleName}.service;
 
-import ${package}.booster.service.CrudService;
+import com.nb6868.onexboot.common.service.CrudService;
 import ${package}.modules.${moduleName}.dto.${className}DTO;
 import ${package}.modules.${moduleName}.entity.${className}Entity;
 

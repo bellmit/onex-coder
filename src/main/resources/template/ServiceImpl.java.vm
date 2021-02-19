@@ -1,7 +1,7 @@
 package ${package}.modules.${moduleName}.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import ${package}.booster.service.impl.CrudServiceImpl;
+import com.nb6868.onexboot.common.service.impl.CrudServiceImpl;
 import ${package}.modules.${moduleName}.dao.${className}Dao;
 import ${package}.modules.${moduleName}.dto.${className}DTO;
 import ${package}.modules.${moduleName}.entity.${className}Entity;

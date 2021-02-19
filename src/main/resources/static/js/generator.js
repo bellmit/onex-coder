@@ -51,7 +51,14 @@ var vm = new Vue({
             docVersion: '1.0.0',
             docDescription: '文档说明',
             docFileType: 'html',
-            codeGenerateConfig: {}
+            codeGenerateConfig: {
+                packageName: 'com.nb6868.onexboot',
+                version: '',
+                moduleName: '',
+                tablePrefix: '',
+                authorName: 'Charles',
+                authorEmail: 'zhangchaoxu@gmail.com'
+            }
         }
     },
     created() {
