@@ -52,12 +52,12 @@ var vm = new Vue({
             docDescription: '文档说明',
             docFileType: 'html',
             codeGenerateConfig: {
-                packageName: 'com.nb6868.onexboot.api',
+                packageName: '',
                 version: '',
                 moduleName: '',
                 tablePrefix: '',
-                authorName: 'Charles',
-                authorEmail: 'zhangchaoxu@gmail.com'
+                authorName: '',
+                authorEmail: ''
             }
         }
     },
@@ -73,6 +73,12 @@ var vm = new Vue({
             this.q.dbUsername = localStorage.getItem("dbUsername") || 'root'
             this.q.dbPassword = localStorage.getItem("dbPassword") || 'root'
             this.q.keyword = localStorage.getItem("keyword") || ''
+            this.q.codeGenerateConfig.packageName = localStorage.getItem("codeGenerateConfig.packageName") || 'com.nb6868.onexboot.api'
+            this.q.codeGenerateConfig.version = localStorage.getItem("codeGenerateConfig.version") || ''
+            this.q.codeGenerateConfig.moduleName = localStorage.getItem("codeGenerateConfig.moduleName") || ''
+            this.q.codeGenerateConfig.tablePrefix = localStorage.getItem("codeGenerateConfig.tablePrefix") || ''
+            this.q.codeGenerateConfig.authorName = localStorage.getItem("codeGenerateConfig.authorName") || 'Charles'
+            this.q.codeGenerateConfig.authorEmail = localStorage.getItem("codeGenerateConfig.authorEmail") || 'zhangchaoxu@gmail.com'
         },
         // 查询
         query: function () {
@@ -82,6 +88,12 @@ var vm = new Vue({
             localStorage.setItem("dbUsername", this.q.dbUsername)
             localStorage.setItem("dbPassword", this.q.dbPassword)
             localStorage.setItem("keyword", this.q.keyword)
+            localStorage.setItem("codeGenerateConfig.packageName", this.q.codeGenerateConfig.packageName)
+            localStorage.setItem("codeGenerateConfig.version", this.q.codeGenerateConfig.version)
+            localStorage.setItem("codeGenerateConfig.moduleName", this.q.codeGenerateConfig.moduleName)
+            localStorage.setItem("codeGenerateConfig.tablePrefix", this.q.codeGenerateConfig.tablePrefix)
+            localStorage.setItem("codeGenerateConfig.authorName", this.q.codeGenerateConfig.authorName)
+            localStorage.setItem("codeGenerateConfig.authorEmail", this.q.codeGenerateConfig.authorEmail)
             $("#jqGrid").jqGrid('setGridParam', {datatype: 'json', postData: vm.q}).trigger("reloadGrid");
         },
         // 生成代码
