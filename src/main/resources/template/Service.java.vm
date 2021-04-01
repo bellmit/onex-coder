@@ -9,6 +9,7 @@ import ${package}.modules.${moduleName}.entity.${className}Entity;
  *
  * @author ${author} ${email}
  */
+@Service
 public class ${className}Service extends DtoService<${className}Dao, ${className}Entity, ${className}DTO> {
 
     @Override
