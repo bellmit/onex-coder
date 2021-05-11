@@ -1,9 +1,15 @@
 package ${package}.modules.${moduleName}.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nb6868.onexboot.common.service.DtoService;
+import ${package}.modules.${moduleName}.dao.BatchCountDao;
 import ${package}.modules.${moduleName}.dto.${className}DTO;
 import ${package}.modules.${moduleName}.entity.${className}Entity;
+import com.nb6868.onexboot.common.util.StringUtils;
 
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 /**
  * ${comments}
  *
