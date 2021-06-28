@@ -18,12 +18,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-
 		<mybatisplus.version>3.4.3.1</mybatisplus.version>
 		<druid.version>1.2.6</druid.version>
-		<commons.io.version>2.8.0</commons.io.version>
 		<commons.configuration.version>1.10</commons.configuration.version>
-		<fastjson.version>1.2.76</fastjson.version>
+		<hutool.version>5.7.2</hutool.version>
 		<velocity.version>1.7</velocity.version>
 		<screw.version>1.0.5</screw.version>
 	</properties>
@@ -54,34 +52,32 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons.io.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>${commons.configuration.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>${fastjson.version}</version>
 		</dependency>
 		<dependency>
 			<artifactId>velocity</artifactId>
 			<groupId>org.apache.velocity</groupId>
 			<version>${velocity.version}</version>
 		</dependency>
+		<!-- hutool -->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+			<version>${hutool.version}</version>
+		</dependency>
 		<!-- [screw](https://github.com/pingfangushi/screw) -->
 		<dependency>
 			<groupId>cn.smallbun.screw</groupId>
 			<artifactId>screw-core</artifactId>
 			<version>${screw.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba</groupId>
+					<artifactId>fastjson</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- lombok -->
 		<dependency>

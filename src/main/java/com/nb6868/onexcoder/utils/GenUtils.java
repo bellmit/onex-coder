@@ -1,12 +1,12 @@
 package com.nb6868.onexcoder.utils;
 
+import cn.hutool.core.io.IoUtil;
 import com.nb6868.onexcoder.entity.CodeGenerateConfig;
 import com.nb6868.onexcoder.entity.ColumnEntity;
 import com.nb6868.onexcoder.entity.TableEntity;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.velocity.Template;
@@ -16,7 +16,6 @@ import org.apache.velocity.app.Velocity;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -149,7 +148,7 @@ public class GenUtils {
             try {
                 //添加到zip
                 zip.putNextEntry(new ZipEntry(getFileName(template, tableEntity.getClassName(), codeGenerateConfig.getPackageName(), codeGenerateConfig.getModuleName(), (String) map.get("pathNameDash"))));
-                IOUtils.write(sw.toString(), zip, StandardCharsets.UTF_8.name());
+                IoUtil.write(zip, false, sw.toString().getBytes());
                 sw.close();
                 zip.closeEntry();
             } catch (IOException e) {

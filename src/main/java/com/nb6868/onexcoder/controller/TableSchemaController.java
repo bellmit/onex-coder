@@ -1,11 +1,11 @@
 package com.nb6868.onexcoder.controller;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.json.JSONUtil;
 import com.nb6868.onexcoder.entity.DbConfigRequest;
 import com.nb6868.onexcoder.service.TableSchemaService;
 import com.nb6868.onexcoder.utils.Result;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +46,7 @@ public class TableSchemaController {
      */
     @GetMapping("/generateCode")
     public void generateCode(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
-        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, StandardCharsets.UTF_8.name()), DbConfigRequest.class);
+        DbConfigRequest request = JSONUtil.toBean(URLDecoder.decode(base64Request, StandardCharsets.UTF_8.name()), DbConfigRequest.class);
         byte[] data = tableSchemaService.generateCode(request);
 
         response.reset();
@@ -54,7 +54,7 @@ public class TableSchemaController {
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
 
-        IOUtils.write(data, response.getOutputStream());
+        IoUtil.write(response.getOutputStream(), true, data);
     }
 
     /**
@@ -62,16 +62,16 @@ public class TableSchemaController {
      */
     @GetMapping("/generateDoc")
     public void generateDoc(HttpServletResponse response, @RequestParam String base64Request) throws Exception {
-        DbConfigRequest request = JSON.parseObject(URLDecoder.decode(base64Request, StandardCharsets.UTF_8.name()), DbConfigRequest.class);
+        DbConfigRequest request = JSONUtil.toBean(URLDecoder.decode(base64Request, StandardCharsets.UTF_8.name()), DbConfigRequest.class);
 
         File file = tableSchemaService.generateDoc(request);
-        byte[] data = FileUtils.readFileToByteArray(file);
+        byte[] data = FileUtil.readBytes(file);
         response.reset();
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
 
-        IOUtils.write(data, response.getOutputStream());
+        IoUtil.write(response.getOutputStream(), true, data);
     }
 
 }
