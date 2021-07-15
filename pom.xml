@@ -21,7 +21,7 @@
 		<mybatisplus.version>3.4.3.1</mybatisplus.version>
 		<druid.version>1.2.6</druid.version>
 		<commons.configuration.version>1.10</commons.configuration.version>
-		<hutool.version>5.7.2</hutool.version>
+		<hutool.version>5.7.4</hutool.version>
 		<velocity.version>1.7</velocity.version>
 		<screw.version>1.0.5</screw.version>
 	</properties>
